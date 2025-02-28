@@ -10,6 +10,10 @@ namespace PirmaUzduotis.Models
     {
         public long ID { get; set; }
         public string Vardas { get; set; }
-        public int[] Pasiskolinta { get; set; }
+        public Knyga Pasiskolinta { get; set; }
+
+
+        
     }
+
 }

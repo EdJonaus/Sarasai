@@ -1,4 +1,5 @@
 ﻿using PirmaUzduotis.Models;
+using PirmaUzduotis.Repositories;
 
 namespace PirmaUzduotis
 {
@@ -6,7 +7,8 @@ namespace PirmaUzduotis
     {
         public static void Main(string[] args)
         {
-            Biblioteka biblioteka = new Biblioteka();
+            Failai darbasSuFailais = new Failai("klientai.csv", "knygos.csv");
+            Biblioteka biblioteka = new Biblioteka(darbasSuFailais);
 
             while (true)
             {
@@ -16,6 +18,10 @@ namespace PirmaUzduotis
                 Console.WriteLine("4. Puslapiu kiekis pagal Autoriu.");
                 Console.WriteLine("5. Knyga pagal autroiu ir pavadinima.");
                 Console.WriteLine("6. Pasalinti knyga is saraso.");
+                Console.WriteLine("7. Prideti klienta.");
+                Console.WriteLine("8. Rodyti visus klientus.");
+                Console.WriteLine("9. Isnomuoti knyga.");
+                Console.WriteLine("10.Isnomuotos knygos.");
                 Console.WriteLine("0. Baigti Darba");
                 if (int.TryParse(Console.ReadLine(), out int pasirinkimas))
                 {
@@ -87,14 +93,75 @@ namespace PirmaUzduotis
                             }
                             break;
                         case 6:
+                            Console.WriteLine("Iveskite autoriu:");
+                            autorius = Console.ReadLine();
+
+                            Console.WriteLine("Iveskite isleidimo metus:");
+                            metai = int.Parse(Console.ReadLine());
+
                             Console.WriteLine("Iveskite knygos pavadinima:");
                             pavadinimas = Console.ReadLine();
+
+                            Console.WriteLine("Iveskite knygos zanra:");
+                            zanras = Console.ReadLine();
+
+                            Console.WriteLine("Iveskite knygos puslapiu skaiciu:");
+                            puslapiai = int.Parse(Console.ReadLine());
+
                             Knyga senaKnyga = new Knyga
-                            {     
-                                Pavadinimas = pavadinimas,                               
+                            {
+                                Autorius = autorius,
+                                Metai = metai,
+                                Pavadinimas = pavadinimas,
+                                Zanras = zanras,
+                                Puslapiai = puslapiai
                             };
 
                             biblioteka.PasalintiKnyga(senaKnyga);
+                            break;
+                        case 7:
+                            Console.WriteLine("Iveskite ID:");
+                            long id = long.Parse(Console.ReadLine());
+
+                            Console.WriteLine("Iveskite varda:");
+                            string vardas = Console.ReadLine();
+
+                            biblioteka.PridetiKlienta(new Klientas { ID = id, Vardas = vardas });
+                            break;
+                        case 8:
+                            foreach (Klientas k in biblioteka.GautiVisusKlientus())
+                            {
+                                Console.WriteLine($"{k.ID} {k.Vardas}");
+                            }
+                            break;
+                        case 9:
+                            foreach (Klientas k in biblioteka.GautiVisusKlientus())
+                            {
+                                Console.WriteLine($"{k.ID} {k.Vardas}");
+                            }
+                            Console.WriteLine("Iveskite kliento ID: ");
+                            Klientas pasirinktasKlientas = biblioteka.KlientasPagalID(long.Parse(Console.ReadLine()));
+                            if (pasirinktasKlientas == null)
+                            {
+                                Console.WriteLine("Neteisingas kliento ID");
+                                break;
+                            }                           
+                            Knyga[] esamosKnygos = biblioteka.GautiVisasKnygas();
+                            for (int i = 0; i < esamosKnygos.Length; i++)
+                            {
+                                Console.WriteLine($"#{i + 1} {esamosKnygos[i].Autorius} {esamosKnygos[i].Metai} {esamosKnygos[i].Pavadinimas} {esamosKnygos[i].Zanras} {esamosKnygos[i].Puslapiai}");
+                            }
+                            Console.WriteLine("Pasirinkite knyga pagal eiles numeri is saraso: ");
+                            int pasirinktasAutoIndex = int.Parse(Console.ReadLine()) - 1;
+                            Knyga pasirinktaKnyga = esamosKnygos[pasirinktasAutoIndex];
+
+                            biblioteka.IsnuomuotiKnyga(pasirinktaKnyga, pasirinktasKlientas);
+                            break;
+                        case 10:
+                            foreach (Klientas k in biblioteka.GautiKlientusSuAktyviomisNuomomis())
+                            {
+                                Console.WriteLine($"{k.ID} {k.Vardas} {k.Pasiskolinta.Autorius} {k.Pasiskolinta.Metai} {k.Pasiskolinta.Pavadinimas} {k.Pasiskolinta.Zanras} {k.Pasiskolinta.Puslapiai}");
+                            }
                             break;
                         case 0:
                             return;

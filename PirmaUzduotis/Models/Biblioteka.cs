@@ -1,14 +1,21 @@
-﻿namespace PirmaUzduotis.Models
+﻿using PirmaUzduotis.Repositories;
+
+namespace PirmaUzduotis.Models
 {
     public class Biblioteka
     {
+        private readonly Failai _duomenys;
         private Knyga[] Knygos;
         private Klientas[] Klientai;
 
-        public Biblioteka()
+        public Biblioteka(Failai duomenys)
         {
             Knygos = new Knyga[0];
             Klientai = new Klientas[0];
+            _duomenys = duomenys;
+
+            Knygos = _duomenys.NuskaitytiAutomobilius();
+            Klientai = _duomenys.NuskaitytiKlientus();
         }
         public void PridetiKnyga(Knyga knyga)
         {
@@ -21,6 +28,8 @@
             }
             naujasMasyvas[index] = knyga;
             Knygos = naujasMasyvas;
+
+            _duomenys.IssaugotiAutomobilius(Knygos);
         }
         public Knyga[] GautiVisasKnygas()
         {
@@ -101,46 +110,63 @@
             }
             naujasKlientas[index] = klientas;
             Klientai = naujasKlientas;
-
+            _duomenys.IssaugotiKlientus(Klientai);
         }
         public Klientas[] GautiVisusKlientus()
         {
             return Klientai;
         }
-        public Klientas[] KlientasPagalID(long id)
+        public Klientas KlientasPagalID(long id)
         {
-            Klientas[] klientai;
-
-            int kiekis = 0;
-            foreach (Klientas a in Klientai)
+            foreach (Klientas k in Klientai)
             {
-                if (a.ID == id)
-                    kiekis++;
+                if (k.ID == id)
+                    return k;
             }
-            klientai = new Klientas[kiekis];
-            int index = 0;
-            foreach (Klientas a in Klientai)
-            {
-                if (a.ID == id)
-                {
-                    klientai[index] = a;
-                    index++;
-                }
-            }
-            return klientai;
+            return null;
         }
         public void PasalintiKnyga(Knyga knyga)
         {
-            foreach(Knyga k in Knygos)
+            Knyga[] newArray = new Knyga[Knygos.Length - 1];
+            int index = 0;
+            for (int i = 0; i < Knygos.Length; i++)
             {
-                for(int i = 0; i < Knygos.Length; i++ )
+                if (Knygos[i].Pavadinimas != knyga.Pavadinimas)
                 {
-                    if (k.Pavadinimas = )
-                    {
 
-                    }
+                    newArray[index] = Knygos[i];
+                    index++;
                 }
             }
+            
+            Knygos = newArray;
+        }
+        public void IsnuomuotiKnyga(Knyga knyga, Klientas skaitytojas)
+        {
+            skaitytojas.Pasiskolinta = knyga;
+
+            PasalintiKnyga(knyga);
+        }
+        public Klientas[] GautiKlientusSuAktyviomisNuomomis()
+        {
+            int kiekis = 0;
+            foreach (Klientas k in Klientai)
+            {
+                if (k.Pasiskolinta != null)
+                    kiekis++;
+            }
+            Klientas[] klientaiSuAktyviaNuoma = new Klientas[kiekis];
+            int index = 0;
+            foreach (Klientas k in Klientai)
+            {
+                if (k.Pasiskolinta != null)
+                {
+                    klientaiSuAktyviaNuoma[index] = k;
+                    index++;
+                }
+
+            }
+            return klientaiSuAktyviaNuoma;
         }
     }
 }
