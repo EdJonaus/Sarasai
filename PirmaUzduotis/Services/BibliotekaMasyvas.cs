@@ -1,14 +1,21 @@
-﻿using PirmaUzduotis.Repositories;
+﻿using BibliotekaProgram.Interface;
+using PirmaUzduotis.Models;
+using PirmaUzduotis.Repositories;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace PirmaUzduotis.Models
+namespace BibliotekaProgram.Services
 {
-    public class Biblioteka
+    public class BibliotekaMasyvas : IBibliotekaInterface
     {
         private readonly Failai _duomenys;
         private Knyga[] Knygos;
         private Klientas[] Klientai;
 
-        public Biblioteka(Failai duomenys)
+        public BibliotekaMasyvas(Failai duomenys)
         {
             Knygos = new Knyga[0];
             Klientai = new Klientas[0];
@@ -138,7 +145,7 @@ namespace PirmaUzduotis.Models
                     index++;
                 }
             }
-            
+
             Knygos = newArray;
         }
         public void IsnuomuotiKnyga(Knyga knyga, Klientas skaitytojas)
@@ -167,6 +174,23 @@ namespace PirmaUzduotis.Models
 
             }
             return klientaiSuAktyviaNuoma;
+        }
+        public Knyga[] TitleSort(Knyga[] array)
+        {
+            int n = array.Length;
+            for (int i = 0; i < n - 1; i++)
+            {
+                for (int j = 0; j < n - i - 1; j++)
+                {
+                    if (array[j].Pavadinimas.CompareTo(array[j + 1].Pavadinimas) > 0)
+                    {
+                        Knyga temp = array[j];
+                        array[j] = array[j + 1];
+                        array[j + 1] = temp;
+                    }
+                }
+            }
+            return array;
         }
     }
 }

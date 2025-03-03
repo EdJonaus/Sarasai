@@ -1,14 +1,16 @@
-﻿using PirmaUzduotis.Models;
+﻿using BibliotekaProgram.Interface;
+using BibliotekaProgram.Services;
+using PirmaUzduotis.Models;
 using PirmaUzduotis.Repositories;
 
-namespace PirmaUzduotis
+namespace BibliotekaProgram
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            Failai darbasSuFailais = new Failai("klientai.csv", "knygos.csv");
-            Biblioteka biblioteka = new Biblioteka(darbasSuFailais);
+            Failai darbasSuFailais = new Failai("klientai.csv", "knygos.csv", "pasiskolinta.csv");
+            IBibliotekaInterface biblioteka = new Biblioteka(darbasSuFailais);
 
             while (true)
             {
@@ -22,6 +24,7 @@ namespace PirmaUzduotis
                 Console.WriteLine("8. Rodyti visus klientus.");
                 Console.WriteLine("9. Isnomuoti knyga.");
                 Console.WriteLine("10.Isnomuotos knygos.");
+                Console.WriteLine("11.Rodyti knygas pagal pavadinima.");
                 Console.WriteLine("0. Baigti Darba");
                 if (int.TryParse(Console.ReadLine(), out int pasirinkimas))
                 {
@@ -43,13 +46,17 @@ namespace PirmaUzduotis
                             Console.WriteLine("Iveskite knygos puslapiu skaiciu:");
                             int puslapiai = int.Parse(Console.ReadLine());
 
+                            Console.WriteLine("Iveskite knygos UID:");
+                            long uid = long.Parse(Console.ReadLine());
+
                             Knyga naujaKnyga = new Knyga
                             {
                                 Autorius = autorius,
                                 Metai = metai,
                                 Pavadinimas = pavadinimas,
                                 Zanras = zanras,
-                                Puslapiai = puslapiai
+                                Puslapiai = puslapiai,
+                                UID = uid
                             };
 
                             biblioteka.PridetiKnyga(naujaKnyga);
@@ -161,6 +168,12 @@ namespace PirmaUzduotis
                             foreach (Klientas k in biblioteka.GautiKlientusSuAktyviomisNuomomis())
                             {
                                 Console.WriteLine($"{k.ID} {k.Vardas} {k.Pasiskolinta.Autorius} {k.Pasiskolinta.Metai} {k.Pasiskolinta.Pavadinimas} {k.Pasiskolinta.Zanras} {k.Pasiskolinta.Puslapiai}");
+                            }
+                            break;
+                        case 11:        
+                            foreach (Knyga p in biblioteka.TitleSort(biblioteka.GautiVisasKnygas()))
+                            {
+                                Console.WriteLine($"{p.Pavadinimas} {p.Autorius} {p.Metai} {p.Zanras} {p.Puslapiai}");
                             }
                             break;
                         case 0:

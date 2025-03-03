@@ -13,5 +13,6 @@ namespace PirmaUzduotis.Models
         public string Pavadinimas { get; set; }
         public string Zanras { get; set; }
         public int Puslapiai { get; set; }
+        public long UID { get; set; }
     }
 }

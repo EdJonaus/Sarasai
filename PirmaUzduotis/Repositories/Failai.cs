@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,10 +12,12 @@ namespace PirmaUzduotis.Repositories
     {
         private readonly string _klientaiInfo;
         private readonly string _knyguInfo;
-        public Failai(string klientaiInfo, string knyguInfo)
+        private readonly string _activeReader;
+        public Failai(string klientaiInfo, string knyguInfo, string activeReader)
         {
             _klientaiInfo = klientaiInfo;
             _knyguInfo = knyguInfo;
+            _activeReader = activeReader;
         }
 
         public void IssaugotiAutomobilius(Knyga[] knygos)
@@ -89,5 +92,16 @@ namespace PirmaUzduotis.Repositories
             sr.Close();
             return nuskaitytiKlientai;
         }
+        public void IssaugotiKlientusSuAktyviomisNuomomis(Klientas[] klientas)
+        {
+            StreamWriter sw = new StreamWriter(_activeReader);
+            foreach (Klientas a in klientas)
+            {
+                sw.WriteLine($"{a.Vardas} {a.ID} {a.Pasiskolinta}");
+            }
+            sw.Close();
+        }
+
+
     }
 }
